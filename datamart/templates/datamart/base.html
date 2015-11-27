@@ -1,0 +1,61 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="pt">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+		<title>Data Mart</title>
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="{% static 'css/app.css' %}">
+		{% block extracss %}{% endblock %}
+
+		{% block extrahead %}{% endblock %}
+	</head>
+
+	<body>
+		<div id="home" class="navbar-fixed">
+			<nav>
+				<div class="nav-wrapper">
+					<a href="{% url 'index' %}" class="brand-logo">
+						Data Mart
+					</a>
+					<a href="#" data-activates="mobile-nav" class="button-collapse"><i class="material-icons reset">menu</i></a>
+					<ul class="right hide-on-med-and-down">
+						<li><a href="">Área do Usuário</a></li>
+					</ul>
+					<ul id="mobile-nav" class="side-nav mobile-nav">
+						<li><a href="">Área do Usuário</a></li>
+					</ul>
+				</div>
+			</nav>
+		</div>
+
+		<main>
+			{% block base_content %}{% endblock %}
+		</main>
+
+		<footer class="page-footer">
+			<div class="container">
+				<div class="row">
+					<div class="col s12">
+						<h5 class="white-text">Grupo</h5>
+						<p>Ana e Leo</p>
+					</div>
+				</div>
+			</div>
+			<div class="footer-developed">
+				<div class="container">Desenvolvido com
+					<span class="footer-heart"><i class="material-icons">favorite_border</i><i class="material-icons onhover">favorite</i></span>
+					pelo grupo</div>
+			</div>
+		</footer>
+
+		<script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/js/materialize.min.js"></script>
+		{% block extrajs %}{% endblock %}
+	</body>
+</html>

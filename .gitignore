@@ -1,0 +1,6 @@
+.DS_Store
+*.pyc
+*.sqlite3
+/env*
+/env/*
+env

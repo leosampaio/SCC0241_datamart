@@ -1,0 +1,31 @@
+{% extends "datamart/base.html" %}
+
+{% block base_content %}
+<div class="row">
+    <div class="col s12">
+        <h4>Listar Vendas</h4>
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th>Detalhes</th>
+                    <th>Cód</th>
+                    <th>Data</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venda in vendas %}
+                    <tr>
+                        <td><a href="{% url 'detalhes_venda' venda.CODIGO %}"><i class="material-icons">edit</i></a></td>
+                        <td>{{ venda.CODIGO }}</td>
+                        <td>{{ venda.DTPEDIDO }}</td>
+                        <td>{{ venda.NOME }}</td>
+                        <td>{{ venda.TOTAL }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
