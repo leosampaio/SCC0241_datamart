@@ -29,12 +29,27 @@ class Cliente:
             'TRATAMENTO': query[1],
             'PRIMEIRONOME': query[2],
             'NOMEDOMEIO': query[3],
-            'SOBRENOME,': query[4],
+            'SOBRENOME': query[4],
             'SUFIXO': query[5],
             'SENHA': query[6],
         }
 
         return dictionary
+
+    @staticmethod
+    def get_all_as_choice():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Cliente ORDER BY primeironome ASC, nomedomeio ASC, sobrenome ASC")
+        query = cursor.fetchall()
+        query = list(query)
+        choices = []
+        for item in query:
+            if item[3] is not None:
+                choices.append((str(item[0]), ' '.join([str(item[2]), str(item[3]), str(item[4])])))
+            else:
+                choices.append((str(item[0]), ' '.join([str(item[2]), str(item[4])])))
+
+        return choices
 
 
 class Endereco():
@@ -53,12 +68,27 @@ class Endereco():
             'LOGRADOURO': query[1],
             'COMPLEMENTO': query[2],
             'CIDADE': query[3],
-            'ESTADO,': query[4],
+            'ESTADO': query[4],
             'PAIS': query[5],
             'CODIGOPOSTAL': query[6],
         }
 
         return dictionary
+
+    @staticmethod
+    def get_all_as_choice():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Endereco")
+        query = cursor.fetchall()
+        query = list(query)
+        choices = []
+        for item in query:
+            if item[2] is not None:
+                choices.append((str(item[0]), ' - '.join([str(item[1]), str(item[2]), str(item[3]), str(item[4]), str(item[5]), str(item[6])])))
+            else:
+                choices.append((str(item[0]), ' - '.join([str(item[1]), str(item[3]), str(item[4]), str(item[5]), str(item[6])])))
+
+        return choices
 
 
 class ClienteEndereco():
@@ -93,7 +123,7 @@ class Vendedor():
             'PRIMEIRONOME': query[1],
             'NOMEDOMEIO': query[2],
             'SOBRENOME': query[3],
-            'SENHA,': query[4],
+            'SENHA': query[4],
             'DTNASCIMENTO': query[5],
             'DTCONTRATACAO': query[6],
             'SEXO': query[7],
@@ -124,6 +154,17 @@ class Transportadora():
         }
 
         return dictionary
+
+    @staticmethod
+    def get_all_as_choice():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Transportadora")
+        query = cursor.fetchall()
+        query = list(query)
+        choices = []
+        for item in query:
+            choices.append((str(item[0]), str(item[1])))
+        return choices
 
 
 class Idioma():

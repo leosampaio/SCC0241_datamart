@@ -4,7 +4,7 @@
 
 {% block base_content %}
 <div class="row container">
-    <h4>Detalhes da Venda</h4>
+    <h4>Detalhes da Venda (Produtos)</h4>
     <div class="col s12">
         <div class="row">
             <div class="col 12">
@@ -13,12 +13,7 @@
             </div>
         </div>
         <form method="post" action="">
-            {% include 'renders/render_forms.html' %}
-            <div class="row">
-                <button class="right waves-effect waves-light btn-large black-text" type="submit" name="action">Modificar</button>
-                <button class="right waves-effect waves-light btn-large black-text" type="submit" name="delete">Deletar</button>
-                <a class="right waves-effect waves-light btn-large black-text" href="">Ver produtos</a>
-            </div>
+
         </form>
     </div>
 </div>
