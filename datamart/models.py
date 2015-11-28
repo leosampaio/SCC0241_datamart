@@ -1,12 +1,5 @@
-from django.db import models
 from django.db import connection
 from django.db import DatabaseError
-
-
-def _(item):
-    if item is not None:
-        return item
-    return ''
 
 
 # Join if not None
@@ -16,10 +9,6 @@ def joinnn(char, lista):
 
 
 class Cliente:
-
-    def __init__(self):
-        pass
-
     @staticmethod
     def all():
         cursor = connection.cursor()
@@ -121,14 +110,6 @@ class ClienteEndereco():
             })
 
         return detalhes
-
-
-class Modelo():
-    pass
-
-
-class Categoria():
-    pass
 
 
 class Produto():
@@ -245,18 +226,7 @@ class Transportadora():
         return choices
 
 
-class Idioma():
-    pass
-
-
-class Descricao():
-    pass
-
-
 class Pedido():
-    def __init__(self):
-        pass
-
     @staticmethod
     def all():
         cursor = connection.cursor()

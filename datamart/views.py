@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.db import connection
 from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido, ClienteEndereco
 from django.conf import settings
 from .forms import EditarVendaForm, EditarProdutoForm, CadastrarClienteForm, CadastrarEnderecoForm
+from .pdf import hello
+from reportlab.pdfgen import canvas
+
 
 def clients_index(request):
     clientes = Cliente.all()
@@ -178,3 +180,15 @@ def cadastrar_enderecos(request, cliete_codigo):
     }
 
     return render(request, 'datamart/cadastrar_endereco.html', context)
+
+
+def relatorios(request):
+    return render(request, 'datamart/tela_relatorios.html')
+
+
+def sp_clientes_gt_15_pedidos(request):
+    c = canvas.Canvas("hello.pdf")
+    hello(c)
+    c.showPage()
+    c.save()
+    return render(request, 'datamart/tela_relatorios.html')

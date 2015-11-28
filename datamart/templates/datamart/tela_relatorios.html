@@ -1,0 +1,12 @@
+{% extends "datamart/base.html" %}
+
+{% block base_content %}
+<div class="row container">
+<p>Escolha um relatório para ser gerado</p>
+<p><a href="{% url 'sp_clientes_gt_15_pedidos' %}">Listar Cliente com mais de 15 pedidos</a></p>
+<p><a href="">Listar vendedores com quota atingida</a></p>
+<p><a href="">Região X Tempo</a></p>
+<p><a href="">Produto X Região</a></p>
+<p><a href="">Produto X Tempo</a></p>
+</div>
+{% endblock %}
