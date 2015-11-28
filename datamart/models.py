@@ -229,7 +229,7 @@ class Pedido():
     @staticmethod
     def dictfetchall():
         cursor = connection.cursor()
-        # cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, C.primeironome AS nome, P.valorbruto AS total FROM Pedido P JOIN Cliente AS C USING ( C.codigo = P.codigocliente ) ORDER BY C.primeironome ASC")
+        # cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) as nome FROM Pedido P INNER JOIN Cliente C ON C.codigo = P.codigocliente ORDER BY C.primeironome ASC;")
         cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, C.primeironome AS nome FROM Pedido P, Cliente C WHERE C.codigo = P.codigocliente ORDER BY C.primeironome ASC")
         '''https://docs.djangoproject.com/en/1.8/topics/db/sql/#executing-custom-sql-directly'''  # noqa
         columns = [col[0] for col in cursor.description]
