@@ -4,6 +4,10 @@ from django import forms
 
 
 class EditarVendaForm(forms.Form):
+    codigocliente = forms.ChoiceField(
+        label='Cliente',
+    )
+
     dtpedido = forms.DateTimeField(
         label='Data do Pedido',
     )
@@ -34,10 +38,6 @@ class EditarVendaForm(forms.Form):
         label='Transportadora',
     )
 
-    codigocliente = forms.ChoiceField(
-        label='Cliente',
-    )
-
     enderecofatura = forms.ChoiceField(
         label='Endereço da Fatura',
     )
@@ -61,4 +61,47 @@ class EditarProdutoForm(forms.Form):
         label='Desconto',
         max_value=1.0,
         min_value=0.0,
+    )
+
+
+class CadastrarClienteForm(forms.Form):
+    tratamento = forms.CharField(
+        label='Tratamento',
+        max_length=8,
+    )
+
+    primeironome = forms.CharField(
+        label='Primeiro Nome',
+        max_length=50,
+    )
+
+    nomedomeio = forms.CharField(
+        label='Nome do Meio',
+        max_length=50,
+    )
+
+    sobrenome = forms.CharField(
+        label='Sobrenome',
+        max_length=50,
+    )
+
+    sufixo = forms.CharField(
+        label='Sufixo',
+        max_length=10,
+    )
+
+    senha = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput(attrs={'required': True})
+    )
+
+
+class CadastrarEnderecoForm(forms.Form):
+    tipoendereco = forms.CharField(
+        label='Tipo de Endereço',
+        max_length=50,
+    )
+
+    endereco = forms.ChoiceField(
+        label='Endereço',
     )

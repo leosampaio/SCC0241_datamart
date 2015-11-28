@@ -100,7 +100,27 @@ class Endereco():
 
 
 class ClienteEndereco():
-    pass
+    @staticmethod
+    def get_by_id(id):
+        cursor = connection.cursor()
+        cursor.execute(''.join(["SELECT * FROM ClienteEndereco WHERE codigoCliente = ", str(id)]))
+        return cursor.fetchall()
+
+    @staticmethod
+    def get_by_id_as_dict(id):
+        querylist = ClienteEndereco.get_by_id(id)
+        querylist = list(querylist)
+        detalhes = []
+        print(querylist)
+
+        for query in querylist:
+            detalhes.append({
+                'CODIGOCLIENTE': query[0],
+                'IDENDERECO': Endereco.get_by_id_as_dict(query[1]),
+                'TIPOENDERECO': query[2],
+            })
+
+        return detalhes
 
 
 class Modelo():

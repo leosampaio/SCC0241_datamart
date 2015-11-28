@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import connection
-from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido
+from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido, ClienteEndereco
 from django.conf import settings
-from .forms import EditarVendaForm, EditarProdutoForm
+from .forms import EditarVendaForm, EditarProdutoForm, CadastrarClienteForm, CadastrarEnderecoForm
 
 def clients_index(request):
     clientes = Cliente.all()
@@ -124,3 +124,57 @@ def alterar_produto(request, venda_pk, produto_codigo):
     }
 
     return render(request, 'datamart/alterar_produto.html', context)
+
+
+def nova_venda(request):
+    form = EditarVendaForm()
+    if request.method == 'POST':
+        form = EditarVendaForm(request.POST)
+        # Salva as coisas no BD
+        # Redireciona para url:alterar_produto param:(ID desta venda)
+
+    transportadoras = Transportadora.get_all_as_choice()[:settings.LIMIT_QUERY]
+    clientes = Cliente.get_all_as_choice()[:settings.LIMIT_QUERY]
+    enderecos = Endereco.get_all_as_choice()[:settings.LIMIT_QUERY]
+
+    form.fields['codigotransportadora'].choices = transportadoras
+    form.fields['codigocliente'].choices = clientes
+    form.fields['enderecofatura'].choices = enderecos
+    form.fields['enderecoentrega'].choices = enderecos
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'datamart/nova_venda.html', context)
+
+
+def cadastrar_cliente(request):
+    form = CadastrarClienteForm()
+    if request.method == 'POST':
+        form = EditarVendaForm(request.POST)
+        # Salva as coisas no BD
+        # Redireciona para url:incluir_enderecos param:(ID deste user)
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'datamart/cadastrar_cliente.html', context)
+
+
+def cadastrar_enderecos(request, cliete_codigo):
+    form = CadastrarEnderecoForm()
+    enderecos = ClienteEndereco.get_by_id_as_dict(cliete_codigo)
+    if request.method == 'POST':
+        form = CadastrarEnderecoForm(request.POST)
+        # Inclui endereço no BD
+
+    enderecos_choice = Endereco.get_all_as_choice()[:settings.LIMIT_QUERY]
+    form.fields['endereco'].choices = enderecos_choice
+
+    context = {
+        'enderecos': enderecos,
+        'form': form,
+    }
+
+    return render(request, 'datamart/cadastrar_endereco.html', context)
