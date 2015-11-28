@@ -45,3 +45,20 @@ class EditarVendaForm(forms.Form):
     enderecoentrega = forms.ChoiceField(
         label='Endereço de Entrega',
     )
+
+
+class EditarProdutoForm(forms.Form):
+    codigoproduto = forms.ChoiceField(
+        label='Produto',
+    )
+
+    quantidade = forms.IntegerField(
+        label='Quantidade',
+        min_value=0,
+    )
+
+    desconto = forms.FloatField(
+        label='Desconto',
+        max_value=1.0,
+        min_value=0.0,
+    )

@@ -1,0 +1,62 @@
+{% extends "datamart/base.html" %}
+
+{% load staticfiles %}
+
+{% block base_content %}
+<div class="row container">
+    <h4>Alterar Produto</h4>
+        <div class="row">
+            <div class="col s12">
+                <p><b>Código:</b> {{venda_id}}</p>
+            </div>
+        </div>
+        <form method="post" action="">
+            {% include 'renders/render_forms.html' %}
+            <div class="row">
+                <p>Preço: <span id="totalprice">0,00</span></p>
+            </div>
+            <div class="row">
+                <button class="right waves-effect waves-light btn-large black-text" type="submit" name="action">Atualizar Produto</button>
+            </div>
+        </form>
+        <div class="row">
+            <a class="right waves-effect waves-light btn-large black-text" href="{% url 'detalhes_produto' venda_id %}">Voltar para a venda sem salvar</a>
+        </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/css/select2.min.css" rel="stylesheet" />
+<link href="{% static 'css/custom-select2.css' %}" rel="stylesheet" />
+<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/js/select2.min.js"></script>
+<script type="text/javascript">
+$('select').select2({
+    width: "",
+});
+
+pricelist = {
+    {% for produto in produtos_precos %}
+    "{{produto.0}}": {{produto.1}},
+    {% endfor %}
+}
+
+$('#id_desconto').prop('step', '0.05');
+
+$('#id_codigoproduto').on("select2:select", function (e) {
+    $('#id_desconto').val(0);
+    $('#id_quantidade').val(1);
+    $('#totalprice').text(pricelist[$(this).val()]);
+});
+
+$('#id_quantidade').keyup(function() {
+    $('#totalprice').text(pricelist[$('#id_codigoproduto').val()] * (1 - $('#id_desconto').val()) * $(this).val());
+});
+
+$('#id_desconto').keyup(function() {
+    $('#totalprice').text(pricelist[$('#id_codigoproduto').val()] * (1 - $(this).val()) * $('#id_quantidade').val());
+});
+
+$('#totalprice').text(pricelist[$('#id_codigoproduto').val()] * (1 - $('#id_desconto').val()) * $('#id_quantidade').val());
+
+</script>
+{% endblock %}

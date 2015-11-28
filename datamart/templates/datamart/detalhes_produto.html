@@ -5,17 +5,55 @@
 {% block base_content %}
 <div class="row container">
     <h4>Detalhes da Venda (Produtos)</h4>
-    <div class="col s12">
         <div class="row">
-            <div class="col 12">
-                <p><b>Código:</b> {{venda.CODIGO}}</p>
-                <p><b>Vendedor:</b> {{venda.CODIGOVENDEDOR.PRIMEIRONOME}} {{venda.CODIGOVENDEDOR.NOMEDOMEIO}} {{venda.CODIGOVENDEDOR.SOBRENOME}}</p>
+            <div class="col s12">
+                <p><b>Código:</b> {{venda_id}}</p>
             </div>
         </div>
-        <form method="post" action="">
+        <div class="col s12">
+            <table class="striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Quantidade</th>
+                        <th>Preço Unitário</th>
+                        <th>Desconto</th>
+                        <th>Total</th>
+                        <th>Editar</th>
+                        <th>Excluir</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produto in produtos_venda %}
+                        <tr>
+                            <td>{{ produto.CODIGOPRODUTO.NOMECONCATENADO }}</td>
+                            <td>{{ produto.QUANTIDADE }}</td>
+                            <td>{{ produto.PRECOUNITARIO }}</td>
+                            <td>{{ produto.DESCONTO }}</td>
+                            <td>{{ produto.TOTAL }}</td>
+                            {% with cod=produto.CODIGOPRODUTO.CODIGO %}
+                            <td><a href="{% url 'alterar_produto' venda_id cod %}"><i class="material-icons">edit</i></a></td>
+                            <td><a href=""><i class="material-icons">close</i></a></td>
+                            {% endwith %}
 
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <form method="post" action="">
+            {% include 'renders/render_forms.html' %}
+            <div class="row">
+                <p>Preço: <span id="totalprice">0,00</span></p>
+            </div>
+            <div class="row">
+                <button class="right waves-effect waves-light btn-large black-text" type="submit" name="action">Incluir Produto</button>
+            </div>
         </form>
-    </div>
+        <div class="row">
+            <a class="right waves-effect waves-light btn-large black-text" href="{% url 'detalhes_venda' venda_id %}">Voltar para a venda</a>
+        </div>
 </div>
 {% endblock %}
 
@@ -27,5 +65,32 @@
 $('select').select2({
     width: "",
 });
+
+pricelist = {
+    {% for produto in produtos_precos %}
+    "{{produto.0}}": {{produto.1}},
+    {% endfor %}
+}
+
+$('#id_desconto').prop('step', '0.05').val(0);
+
+$('#id_codigoproduto').on("select2:select", function (e) {
+    $('#id_desconto').val(0);
+    $('#id_quantidade').val(1);
+    $('#totalprice').text(pricelist[$(this).val()]);
+});
+
+$('#id_quantidade').val(1);
+
+$('#id_quantidade').keyup(function() {
+    $('#totalprice').text(pricelist[$('#id_codigoproduto').val()] * (1 - $('#id_desconto').val()) * $(this).val());
+});
+
+$('#id_desconto').keyup(function() {
+    $('#totalprice').text(pricelist[$('#id_codigoproduto').val()] * (1 - $(this).val()) * $('#id_quantidade').val());
+});
+
+$('#totalprice').text(pricelist[$('#id_codigoproduto').val()] * (1 - $('#id_desconto').val()) * $('#id_quantidade').val());
+
 </script>
 {% endblock %}

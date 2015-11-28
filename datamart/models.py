@@ -115,12 +115,12 @@ class Produto():
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
-        cursor.execute(''.join(["SELECT * FROM Produto WHERE codigo = ", str(id)]))
+        cursor.execute(''.join(["SELECT * FROM Produto WHERE codigo = \'", str(id), "\' ORDER BY nome ASC"]))
         return cursor.fetchall()
 
     @staticmethod
     def get_by_id_as_dict(id):
-        query = Vendedor.get_by_id(id)
+        query = Produto.get_by_id(id)
         query = list(query)[0]
 
         dictionary = {
@@ -135,7 +135,8 @@ class Produto():
             'CODIGOMODELO': query[8],
             'DTINICIOVENDA': query[9],
             'DTFIMVENDA': query[10],
-            'NOMECONCATENADO': joinnn(' ', query[1:3].append(query[5]))
+            # 'NOMECONCATENADO': joinnn(' ', [query[1:3], query[5]])
+            'NOMECONCATENADO': joinnn(' ', (query[1], query[2], query[5]))
         }
 
         return dictionary
@@ -143,12 +144,23 @@ class Produto():
     @staticmethod
     def get_all_as_choice():
         cursor = connection.cursor()
-        cursor.execute("SELECT * FROM Produto")
+        cursor.execute("SELECT * FROM Produto ORDER BY nome ASC")
         query = cursor.fetchall()
         query = list(query)
         choices = []
         for item in query:
-            choices.append((str(item[0]), joinnn(' ', query[1:3].append(query[5]))))
+            choices.append((str(item[0]), joinnn(' ', [item[1], item[2], item[5]])))
+        return choices
+
+    @staticmethod
+    def get_all_as_pricelist():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Produto ORDER BY nome ASC")
+        query = cursor.fetchall()
+        query = list(query)
+        choices = []
+        for item in query:
+            choices.append((str(item[0]), float(item[4])))
         return choices
 
 
@@ -292,20 +304,40 @@ class DetalhesPedido():
         return cursor.fetchall()
 
     @staticmethod
+    def get_by_pk(venda, produto):
+        cursor = connection.cursor()
+        cursor.execute(''.join(["SELECT * FROM DetalhesPedido WHERE codigoPedido = ", str(venda), " AND codigoProduto = \'", str(produto), "\'"]))
+        return cursor.fetchall()
+
+    @staticmethod
     def get_by_id_as_dict(id):
-        querylist = Vendedor.get_by_id(id)
-        querylist = list(querylist)[0]
+        querylist = DetalhesPedido.get_by_id(id)
+        querylist = list(querylist)
         detalhes = []
 
         for query in querylist:
-            dictionary = {
+            detalhes.append({
                 'CODIGOPEDIDO': query[0],
-                'CODIGOPRODUTO': query[1],
+                'CODIGOPRODUTO': Produto.get_by_id_as_dict(query[1]),
                 'QUANTIDADE': query[2],
                 'PRECOUNITARIO': query[3],
                 'DESCONTO': query[4],
-            }
-            dictionary['CODIGOPRODUTO'] = Produto.get_by_id_as_dict(dictionary['CODIGOPRODUTO'])
-            detalhes.append(dictionary)
+                'TOTAL': float(query[3]) * int(query[2]) * (1 - float(query[4])),
+            })
 
         return detalhes
+
+    @staticmethod
+    def get_by_pk_as_dict(venda_pk, produto_codigo):
+        query = DetalhesPedido.get_by_pk(venda_pk, produto_codigo)
+        query = list(query)[0]
+        dictionary = {
+            'CODIGOPEDIDO': query[0],
+            'CODIGOPRODUTO': Produto.get_by_id_as_dict(query[1]),
+            'QUANTIDADE': query[2],
+            'PRECOUNITARIO': query[3],
+            'DESCONTO': query[4],
+            'TOTAL': float(query[3]) * int(query[2]) * (1 - float(query[4])),
+        }
+
+        return dictionary

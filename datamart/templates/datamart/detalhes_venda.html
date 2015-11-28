@@ -17,7 +17,8 @@
             <div class="row">
                 <button class="right waves-effect waves-light btn-large black-text" type="submit" name="action">Modificar</button>
                 <button class="right waves-effect waves-light btn-large black-text" type="submit" name="delete">Deletar</button>
-                <a class="right waves-effect waves-light btn-large black-text" href="">Ver produtos</a>
+                <a class="right waves-effect waves-light btn-large black-text" href="{% url 'detalhes_produto' venda.CODIGO %}">Ver produtos</a>
+                <a class="right waves-effect waves-light btn-large black-text" href="{% url 'listar_vendas' %}">Voltar para a Lista de Vendas sem salvar</a>
             </div>
         </form>
     </div>
