@@ -3,6 +3,18 @@ from django.db import connection
 from django.db import DatabaseError
 
 
+def _(item):
+    if item is not None:
+        return item
+    return ''
+
+
+# Join if not None
+def joinnn(char, lista):
+    items = [x for x in lista if x is not None]
+    return char.join(items)
+
+
 class Cliente:
 
     def __init__(self):
@@ -32,6 +44,7 @@ class Cliente:
             'SOBRENOME': query[4],
             'SUFIXO': query[5],
             'SENHA': query[6],
+            'NOMECONCATENADO': joinnn(' ', query[2:6]),
         }
 
         return dictionary
@@ -44,10 +57,7 @@ class Cliente:
         query = list(query)
         choices = []
         for item in query:
-            if item[3] is not None:
-                choices.append((str(item[0]), ' '.join([str(item[2]), str(item[3]), str(item[4])])))
-            else:
-                choices.append((str(item[0]), ' '.join([str(item[2]), str(item[4])])))
+            choices.append((str(item[0]), joinnn(' ', item[2:6])))
 
         return choices
 
@@ -71,6 +81,7 @@ class Endereco():
             'ESTADO': query[4],
             'PAIS': query[5],
             'CODIGOPOSTAL': query[6],
+            'ENDERECOCONCATENADO': joinnn(' - ', query[1:7]),
         }
 
         return dictionary
@@ -83,10 +94,7 @@ class Endereco():
         query = list(query)
         choices = []
         for item in query:
-            if item[2] is not None:
-                choices.append((str(item[0]), ' - '.join([str(item[1]), str(item[2]), str(item[3]), str(item[4]), str(item[5]), str(item[6])])))
-            else:
-                choices.append((str(item[0]), ' - '.join([str(item[1]), str(item[3]), str(item[4]), str(item[5]), str(item[6])])))
+            choices.append((str(item[0]), joinnn(' - ', item[1:7])))
 
         return choices
 
@@ -104,7 +112,44 @@ class Categoria():
 
 
 class Produto():
-    pass
+    @staticmethod
+    def get_by_id(id):
+        cursor = connection.cursor()
+        cursor.execute(''.join(["SELECT * FROM Produto WHERE codigo = ", str(id)]))
+        return cursor.fetchall()
+
+    @staticmethod
+    def get_by_id_as_dict(id):
+        query = Vendedor.get_by_id(id)
+        query = list(query)[0]
+
+        dictionary = {
+            'CODIGO': query[0],
+            'NOME': query[1],
+            'COR': query[2],
+            'CUSTOPRODUCAO': query[3],
+            'PRECO': query[4],
+            'TAMANHO': query[5],
+            'PESO': query[6],
+            'CODIGOCATEGORIA': query[7],
+            'CODIGOMODELO': query[8],
+            'DTINICIOVENDA': query[9],
+            'DTFIMVENDA': query[10],
+            'NOMECONCATENADO': joinnn(' ', query[1:3].append(query[5]))
+        }
+
+        return dictionary
+
+    @staticmethod
+    def get_all_as_choice():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Produto")
+        query = cursor.fetchall()
+        query = list(query)
+        choices = []
+        for item in query:
+            choices.append((str(item[0]), joinnn(' ', query[1:3].append(query[5]))))
+        return choices
 
 
 class Vendedor():
@@ -130,6 +175,7 @@ class Vendedor():
             'QUOTA': query[8],
             'BONUS': query[9],
             'COMISSAO': query[10],
+            'NOMECONCATENADO': joinnn(' ', query[1:4])
         }
 
         return dictionary
@@ -229,8 +275,7 @@ class Pedido():
     @staticmethod
     def dictfetchall():
         cursor = connection.cursor()
-        # cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) as nome FROM Pedido P INNER JOIN Cliente C ON C.codigo = P.codigocliente ORDER BY C.primeironome ASC;")
-        cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, C.primeironome AS nome FROM Pedido P, Cliente C WHERE C.codigo = P.codigocliente ORDER BY C.primeironome ASC")
+        cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) as nome FROM Pedido P INNER JOIN Cliente C ON C.codigo = P.codigocliente ORDER BY C.primeironome ASC;")
         '''https://docs.djangoproject.com/en/1.8/topics/db/sql/#executing-custom-sql-directly'''  # noqa
         columns = [col[0] for col in cursor.description]
         return [
@@ -240,4 +285,27 @@ class Pedido():
 
 
 class DetalhesPedido():
-    pass
+    @staticmethod
+    def get_by_id(id):
+        cursor = connection.cursor()
+        cursor.execute(''.join(["SELECT * FROM DetalhesPedido WHERE codigoPedido = ", str(id)]))
+        return cursor.fetchall()
+
+    @staticmethod
+    def get_by_id_as_dict(id):
+        querylist = Vendedor.get_by_id(id)
+        querylist = list(querylist)[0]
+        detalhes = []
+
+        for query in querylist:
+            dictionary = {
+                'CODIGOPEDIDO': query[0],
+                'CODIGOPRODUTO': query[1],
+                'QUANTIDADE': query[2],
+                'PRECOUNITARIO': query[3],
+                'DESCONTO': query[4],
+            }
+            dictionary['CODIGOPRODUTO'] = Produto.get_by_id_as_dict(dictionary['CODIGOPRODUTO'])
+            detalhes.append(dictionary)
+
+        return detalhes

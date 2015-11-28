@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^conta/$', views.conta, name='conta'),
     url(r'^listar-vendas/$', views.listar_vendas, name='listar_vendas'),
     url(r'^listar-vendas/detalhes/(\d+)/$', views.detalhes_venda, name='detalhes_venda'),
+    url(r'^listar-vendas/detalhes/(\d+)/produtos/$', views.detalhes_produto, name='detalhes_produto'),
 ]
