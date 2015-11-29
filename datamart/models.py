@@ -100,7 +100,6 @@ class ClienteEndereco():
         querylist = ClienteEndereco.get_by_id(id)
         querylist = list(querylist)
         detalhes = []
-        print(querylist)
 
         for query in querylist:
             detalhes.append({

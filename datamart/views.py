@@ -1,10 +1,12 @@
+# coding:utf-8
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido, ClienteEndereco
 from django.conf import settings
 from .forms import EditarVendaForm, EditarProdutoForm, CadastrarClienteForm, CadastrarEnderecoForm
-from .pdf import hello
-from reportlab.pdfgen import canvas
+from wkhtmltopdf.views import PDFTemplateView
+from django.db import connection
 
 
 def clients_index(request):
@@ -169,7 +171,7 @@ def cadastrar_enderecos(request, cliete_codigo):
     enderecos = ClienteEndereco.get_by_id_as_dict(cliete_codigo)
     if request.method == 'POST':
         form = CadastrarEnderecoForm(request.POST)
-        # Inclui endereço no BD
+        # Inclui endereco no BD
 
     enderecos_choice = Endereco.get_all_as_choice()[:settings.LIMIT_QUERY]
     form.fields['endereco'].choices = enderecos_choice
@@ -186,9 +188,42 @@ def relatorios(request):
     return render(request, 'datamart/tela_relatorios.html')
 
 
+def get_sp_clientes_gt_15_pedidos():
+    cursor = connection.cursor()
+    cursor.execute("SELECT (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) as nomeCompleto, COUNT(*) as numeroPedidos \
+FROM Cliente C \
+JOIN Pedido P ON P.codigoCliente = C.codigo \
+GROUP BY (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) \
+HAVING COUNT(*) >= 15 \
+ORDER BY COUNT(*) DESC")
+
+    querylist = cursor.fetchall()
+    querylist = list(querylist)
+    context = []
+
+    for query in querylist:
+        context.append({
+            'NOMECOMPLETO': query[0],
+            'NUMEROPEDIDOS': query[1],
+        })
+
+    return context
+
+
+class SPClientes(PDFTemplateView):
+    filename = 'my_pdf.pdf'
+    template_name = 'pdf/clientes_gt_15_pedidos.html'
+    cmd_options = {
+        'margin-top': 3,
+    }
+
+    def get_context_data(self, **kwargs):
+        context = super(SPClientes, self).get_context_data(**kwargs)
+        context['titulo_relatorio'] = 'Clientes com mais do que 15 pedidos'
+        context['clientes'] = get_sp_clientes_gt_15_pedidos()
+        return context
+
+
 def sp_clientes_gt_15_pedidos(request):
-    c = canvas.Canvas("hello.pdf")
-    hello(c)
-    c.showPage()
-    c.save()
     return render(request, 'datamart/tela_relatorios.html')
+

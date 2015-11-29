@@ -1,0 +1,20 @@
+{% extends "pdf/base.html" %}
+
+{% block base_content %}
+<table>
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Pedidos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in clientes %}
+        <tr>
+            <td>{{cliente.NOMECOMPLETO}}</td>
+            <td>{{cliente.NUMEROPEDIDOS}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
