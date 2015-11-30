@@ -87,7 +87,6 @@ def detalhes_produto(request, codigopedido):
     if request.method == 'POST':
         form = EditarProdutoForm(request.POST)
 
-    produtos_venda = DetalhesPedido.get_by_id_as_dict(codigopedido)
     produtos_choice = Produto.get_all_as_choice()[:settings.LIMIT_QUERY]
     produtos_precos = Produto.get_all_as_pricelist()[:settings.LIMIT_QUERY]
 
@@ -96,6 +95,17 @@ def detalhes_produto(request, codigopedido):
     # form.fields['desconto'].initial = 0
     if request.method == 'POST' and form.is_valid():
         print(form.cleaned_data)
+        d = form.cleaned_data
+        detpedido = DetalhesPedido(
+            codigopedido,
+            d['quantidade'],
+            d['codigoproduto'],
+            d['desconto']
+        )
+
+        detpedido.save()
+
+    produtos_venda = DetalhesPedido.get_by_id_as_dict(codigopedido)
 
     context = {
         'venda_id': codigopedido,

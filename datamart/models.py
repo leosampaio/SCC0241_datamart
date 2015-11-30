@@ -375,6 +375,37 @@ class Pedido(Base):
 
 
 class DetalhesPedido(Base):
+
+    @autoassign
+    def __init__(
+        self,
+        codigopedido,
+        quantidade,
+        codigoproduto,
+        desconto):
+        cursor = connection.cursor()
+        cursor.execute("SELECT preco FROM Produto WHERE codigo=\'{}\'".format(codigoproduto))
+        self.precounitario = cursor.fetchall()[0][0]
+
+    def save(self):
+        cursor = connection.cursor()
+        query = "INSERT INTO DetalhesPedido (\
+                codigopedido, \
+                quantidade, \
+                codigoproduto, \
+                desconto, \
+                precounitario \
+            )\
+            VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\')".format(
+                self.codigopedido,
+                self.quantidade,
+                self.codigoproduto,
+                self.desconto,
+                self.precounitario
+            )
+        print(query)
+        cursor.execute(query)
+
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
