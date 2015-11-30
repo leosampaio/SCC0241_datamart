@@ -47,3 +47,7 @@ Instalar pacotes do Python:
 Rodar o servidor:
 - python manage.py runserver
 
+
+
+A variável LIMIT_QUERY em settings.py na pasta labbd representa a quantidade máxima de dados a serem carregados no html. Caso seja None todos serão carregados.  
+Quando todos são carregados, o html fica bem pesado.
