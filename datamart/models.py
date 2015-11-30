@@ -8,6 +8,28 @@ def joinnn(char, lista):
     items = [x for x in lista if x is not None]
     return char.join(items)
 
+
+class Session():
+    @staticmethod
+    def set_login(user_cod):
+        if user_cod is None:
+            return False
+
+        cursor = connection.cursor()
+        query = "DELETE FROM logadoagora"
+        cursor.execute(query)
+
+        query = ''.join(["INSERT INTO logadoagora VALUES (", user_cod, ')'])
+        cursor.execute(query)
+        return True
+
+    @staticmethod
+    def get_login():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM logadoagora")
+        return cursor.fetchall()[0][0]
+
+
 class Base:
     def get_code(self):
         cursor = connection.cursor()
@@ -21,6 +43,7 @@ class Base:
         cursor = connection.cursor()
         query = "DELETE FROM {}\
             WHERE codigo=\'{}\'".format(self.__class__.__name__, codigo)
+
 
 class Cliente(Base):
 
@@ -240,6 +263,17 @@ class Vendedor(Base):
 
         return dictionary
 
+    @staticmethod
+    def get_all_as_choice():
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM Vendedor ORDER BY primeironome")
+        query = cursor.fetchall()
+        query = list(query)
+        choices = []
+        for item in query:
+            choices.append((str(item[0]), joinnn(' ', item[1:4])))
+        return choices
+
 
 class Transportadora(Base):
     @staticmethod
@@ -277,21 +311,22 @@ class Pedido(Base):
 
     @autoassign
     def __init__(
-        self, 
-        codigocliente, 
-        dtenvio, 
-        enderecoentrega, 
-        dtpedido, 
-        contacliente, 
-        codigotransportadora, 
-        enderecofatura, 
-        imposto, 
-        dtrecebimento, 
+        self,
+        codigocliente,
+        dtenvio,
+        enderecoentrega,
+        dtpedido,
+        contacliente,
+        codigotransportadora,
+        enderecofatura,
+        imposto,
+        dtrecebimento,
         numerocartaocredito):
         self.codigo = self.get_code()
 
     def save(self):
         cursor = connection.cursor()
+        vendedor = Session.get_login()
         query = "INSERT INTO Pedido (\
                 codigo, \
                 codigocliente, \
@@ -303,20 +338,22 @@ class Pedido(Base):
                 enderecofatura, \
                 imposto, \
                 dtrecebimento, \
-                numerocartaocredito\
+                numerocartaocredito, \
+                codigovendedor\
             )\
-            VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\')".format(
+            VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\')".format(
                 self.codigo,
-                self.codigocliente, 
-                self.dtenvio.strftime('%Y-%m-%d'), 
-                self.enderecoentrega, 
-                self.dtpedido.strftime('%Y-%m-%d'), 
-                self.contacliente, 
-                self.codigotransportadora, 
-                self.enderecofatura, 
-                self.imposto, 
-                self.dtrecebimento.strftime('%Y-%m-%d'), 
-                self.numerocartaocredito
+                self.codigocliente,
+                self.dtenvio.strftime('%Y-%m-%d'),
+                self.enderecoentrega,
+                self.dtpedido.strftime('%Y-%m-%d'),
+                self.contacliente,
+                self.codigotransportadora,
+                self.enderecofatura,
+                self.imposto,
+                self.dtrecebimento.strftime('%Y-%m-%d'),
+                self.numerocartaocredito,
+                vendedor,
             )
         print(query)
         cursor.execute(query)
@@ -335,15 +372,15 @@ class Pedido(Base):
                 dtrecebimento=\'{}\', \
                 numerocartaocredito=\'{}\'\
                 WHERE codigo=\'{}\'".format(
-                self.codigocliente, 
-                self.dtenvio.strftime('%Y-%m-%d'), 
-                self.enderecoentrega, 
-                self.dtpedido.strftime('%Y-%m-%d'), 
-                self.contacliente, 
-                self.codigotransportadora, 
-                self.enderecofatura, 
-                self.imposto, 
-                self.dtrecebimento.strftime('%Y-%m-%d'), 
+                self.codigocliente,
+                self.dtenvio.strftime('%Y-%m-%d'),
+                self.enderecoentrega,
+                self.dtpedido.strftime('%Y-%m-%d'),
+                self.contacliente,
+                self.codigotransportadora,
+                self.enderecofatura,
+                self.imposto,
+                self.dtrecebimento.strftime('%Y-%m-%d'),
                 self.numerocartaocredito,
                 self.codigo
             )
@@ -406,7 +443,7 @@ class Pedido(Base):
     @staticmethod
     def dictfetchall():
         cursor = connection.cursor()
-        cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) as nome FROM Pedido P INNER JOIN Cliente C ON C.codigo = P.codigocliente ORDER BY C.primeironome ASC;")
+        cursor.execute("SELECT P.codigo AS codigo, P.dtpedido AS dtpedido, P.valorbruto AS total, (C.primeiroNome || ' ' || C.nomedoMeio || ' ' || C.sobrenome) as nome FROM Pedido P INNER JOIN Cliente C ON C.codigo = P.codigocliente RIGHT JOIN logadoagora L ON P.codigovendedor = L.codigo ORDER BY C.primeironome ASC;")
         '''https://docs.djangoproject.com/en/1.8/topics/db/sql/#executing-custom-sql-directly'''  # noqa
         columns = [col[0] for col in cursor.description]
         return [
@@ -419,11 +456,11 @@ class DetalhesPedido(Base):
 
     @autoassign
     def __init__(
-        self,
-        codigopedido,
-        quantidade,
-        codigoproduto,
-        desconto):
+            self,
+            codigopedido,
+            quantidade,
+            codigoproduto,
+            desconto):
         cursor = connection.cursor()
         cursor.execute("SELECT preco FROM Produto WHERE codigo=\'{}\'".format(codigoproduto))
         self.precounitario = cursor.fetchall()[0][0]

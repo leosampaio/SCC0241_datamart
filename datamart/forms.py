@@ -3,6 +3,16 @@
 from django import forms
 
 
+class LoginForm(forms.Form):
+    usuario = forms.ChoiceField(
+        label='Usuário',
+    )
+    senha = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput(attrs={'required': True})
+    )
+
+
 class EditarVendaForm(forms.Form):
     codigocliente = forms.ChoiceField(
         label='Cliente',
@@ -45,6 +55,7 @@ class EditarVendaForm(forms.Form):
     enderecoentrega = forms.ChoiceField(
         label='Endereço de Entrega',
     )
+
 
 class EditarProdutoForm(forms.Form):
     codigoproduto = forms.ChoiceField(
