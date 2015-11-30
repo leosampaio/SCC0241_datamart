@@ -362,9 +362,14 @@ class relatorio2(PDFTemplateView):
 def sp_clientes_gt_15_pedidos(request):
     return render(request, 'datamart/tela_relatorios.html')
 
+def relatorio2_dinamico(request):
+    if request.method == 'POST':
+        form = RelatorioForm(request.POST)
+
 def relatorio2_html(request):
     context = {
         'vendedores': get_relatorio2(),
+        'titulo_relatorio': 'Vendedores que Atingiram a Quota No Período',
     }
-    return render(request, 'pdf/relatorio2.html')
+    return render(request, 'pdf/relatorio2.html', context)
 

@@ -115,3 +115,12 @@ class CadastrarEnderecoForm(forms.Form):
     endereco = forms.ChoiceField(
         label='Endereço',
     )
+
+class RelatorioForm(forms.Form):
+    inicio = forms.DateTimeField(
+        label='Data Inicio',
+    )
+
+    fim = forms.DateTimeField(
+        label='Data Fim',
+    )
