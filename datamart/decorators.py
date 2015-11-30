@@ -1,6 +1,9 @@
 from functools import wraps
 from inspect import getargspec, isfunction
-from itertools import izip, ifilter, starmap
+try: # Python 2
+ from itertools import izip, ifilter, starmap
+except ImportError: # Python 3
+ izip = zip
 
 def autoassign(*names, **kwargs):
     """
