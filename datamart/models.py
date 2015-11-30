@@ -75,7 +75,8 @@ class Cliente(Base):
         return choices
 
 
-class Endereco():
+class Endereco(Base):
+
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
@@ -112,7 +113,23 @@ class Endereco():
         return choices
 
 
-class ClienteEndereco():
+class ClienteEndereco(Base):
+
+    @autoassign
+    def __init__(self, cliente_codigo, endereco, tipoendereco):
+        pass
+
+    def save(self):
+        cursor = connection.cursor()
+        query = "INSERT INTO ClienteEndereco (\
+                codigocliente, idendereco, tipoendereco\
+            )\
+            VALUES (\'{}\', \'{}\', \'{}\')".format(
+                self.cliente_codigo, self.endereco, self.tipoendereco
+            )
+        print(query)
+        cursor.execute(query)
+
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()

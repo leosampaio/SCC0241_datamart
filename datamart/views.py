@@ -189,7 +189,6 @@ def cadastrar_cliente(request):
 
 def cadastrar_enderecos(request, cliente_codigo):
     form = CadastrarEnderecoForm()
-    enderecos = ClienteEndereco.get_by_id_as_dict(cliente_codigo)
     if request.method == 'POST':
         form = CadastrarEnderecoForm(request.POST)
         # Inclui endereco no BD
@@ -199,6 +198,14 @@ def cadastrar_enderecos(request, cliente_codigo):
 
     if request.method == 'POST' and form.is_valid():
         print(form.cleaned_data)
+        d = form.cleaned_data
+        cliente_endereco = ClienteEndereco(
+            cliente_codigo, d['endereco'], d['tipoendereco']
+        )
+
+        cliente_endereco.save()
+
+    enderecos = ClienteEndereco.get_by_id_as_dict(cliente_codigo)
 
     context = {
         'enderecos': enderecos,
