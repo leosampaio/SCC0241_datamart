@@ -315,6 +315,35 @@ class Pedido(Base):
         print(query)
         cursor.execute(query)
 
+    def update(self):
+        cursor = connection.cursor()
+        query = "UPDATE Pedido SET\
+                codigocliente=\'{}\', \
+                dtenvio=\'{}\', \
+                enderecoentrega=\'{}\', \
+                dtpedido=\'{}\', \
+                contacliente=\'{}\', \
+                codigotransportadora=\'{}\', \
+                enderecofatura=\'{}\', \
+                imposto=\'{}\', \
+                dtrecebimento=\'{}\', \
+                numerocartaocredito=\'{}\'\
+                WHERE codigo=\'{}\'".format(
+                self.codigocliente, 
+                self.dtenvio.strftime('%Y-%m-%d'), 
+                self.enderecoentrega, 
+                self.dtpedido.strftime('%Y-%m-%d'), 
+                self.contacliente, 
+                self.codigotransportadora, 
+                self.enderecofatura, 
+                self.imposto, 
+                self.dtrecebimento.strftime('%Y-%m-%d'), 
+                self.numerocartaocredito,
+                self.codigo
+            )
+        print(query)
+        cursor.execute(query)
+
     @staticmethod
     def all():
         cursor = connection.cursor()

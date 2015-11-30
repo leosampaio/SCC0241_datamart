@@ -72,8 +72,22 @@ def detalhes_venda(request, pk):
     form.fields['enderecoentrega'].initial = venda['ENDERECOENTREGA']['ID']
 
     if request.method == 'POST' and form.is_valid():
-        data = form.cleaned_data
         print(form.cleaned_data)
+        d = form.cleaned_data
+        pedido = Pedido(
+            d['codigocliente'],
+            d['dtenvio'],
+            d['enderecoentrega'], 
+            d['dtpedido'], 
+            d['contacliente'], 
+            d['codigotransportadora'], 
+            d['enderecofatura'], 
+            d['imposto'], 
+            d['dtrecebimento'], 
+            d['numerocartaocredito']
+        )
+
+        pedido.update()
 
     context = {
         'venda': venda,
