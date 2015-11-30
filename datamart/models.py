@@ -11,7 +11,7 @@ def joinnn(char, lista):
 class Base:
     def get_code(self):
         cursor = connection.cursor()
-        query = "SELECT MAX(codigo) FROM {}".format()
+        query = "SELECT MAX(codigo) FROM {}".format(self.__class__.__name__)
         cursor.execute(query)
         current = cursor.fetchall()[0][0]
         return current + 1
