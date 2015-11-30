@@ -447,6 +447,24 @@ class DetalhesPedido(Base):
         print(query)
         cursor.execute(query)
 
+    def update(self, novo_produto):
+        cursor = connection.cursor()
+        query = "UPDATE DetalhesPedido SET\
+                quantidade=\'{}\', \
+                desconto=\'{}\', \
+                precounitario=\'{}\', \
+                codigoproduto=\'{}\' \
+                WHERE codigoproduto=\'{}\' AND codigopedido=\'{}\'".format(
+                self.quantidade,
+                self.desconto,
+                self.precounitario,
+                novo_produto,
+                self.codigoproduto,
+                self.codigopedido
+            )
+        print(query)
+        cursor.execute(query)
+
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()

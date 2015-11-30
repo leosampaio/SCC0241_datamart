@@ -99,7 +99,6 @@ def delete_venda(request, codigo):
     Pedido.delete(codigo)
     return redirect("listar_vendas")
 
-
 def detalhes_produto(request, codigopedido):
     form = EditarProdutoForm()
     if request.method == 'POST':
@@ -157,6 +156,15 @@ def alterar_produto(request, venda_pk, produto_codigo):
 
     if request.method == 'POST' and form.is_valid():
         print(form.cleaned_data)
+        d = form.cleaned_data
+        detpedido = DetalhesPedido(
+            venda_pk,
+            d['quantidade'],
+            produto_codigo,
+            d['desconto']
+        )
+
+        detpedido.update(d['codigoproduto'])
 
     context = {
         'venda_id': venda_pk,
