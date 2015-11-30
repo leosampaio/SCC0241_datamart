@@ -2,9 +2,9 @@
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido, ClienteEndereco
+from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido, ClienteEndereco, Vendedor, Session
 from django.conf import settings
-from .forms import EditarVendaForm, EditarProdutoForm, CadastrarClienteForm, CadastrarEnderecoForm
+from .forms import EditarVendaForm, EditarProdutoForm, CadastrarClienteForm, CadastrarEnderecoForm, LoginForm
 from wkhtmltopdf.views import PDFTemplateView
 from django.db import connection
 
@@ -15,7 +15,19 @@ def clients_index(request):
 
 
 def index(request):
-    return render(request, 'datamart/index.html')
+
+    if request.method == 'POST':
+        result = Session.set_login(request.POST['usuario'])
+        if result:
+            return redirect('conta')
+
+    form = LoginForm()
+    form.fields['usuario'].choices = Vendedor.get_all_as_choice()[:settings.LIMIT_QUERY]
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'datamart/index.html', context)
 
 
 def conta(request):
@@ -24,6 +36,8 @@ def conta(request):
 
 def listar_vendas(request):
     lista_de_vendas = Pedido.dictfetchall()[:settings.LIMIT_QUERY]
+    if lista_de_vendas[0]['DTPEDIDO'] is None:
+        lista_de_vendas = None
 
     context = {
         'vendas': lista_de_vendas,
@@ -77,13 +91,13 @@ def detalhes_venda(request, pk):
         pedido = Pedido(
             d['codigocliente'],
             d['dtenvio'],
-            d['enderecoentrega'], 
-            d['dtpedido'], 
-            d['contacliente'], 
-            d['codigotransportadora'], 
-            d['enderecofatura'], 
-            d['imposto'], 
-            d['dtrecebimento'], 
+            d['enderecoentrega'],
+            d['dtpedido'],
+            d['contacliente'],
+            d['codigotransportadora'],
+            d['enderecofatura'],
+            d['imposto'],
+            d['dtrecebimento'],
             d['numerocartaocredito']
         )
         pedido.codigo = pk
@@ -197,13 +211,13 @@ def nova_venda(request):
         pedido = Pedido(
             d['codigocliente'],
             d['dtenvio'],
-            d['enderecoentrega'], 
-            d['dtpedido'], 
-            d['contacliente'], 
-            d['codigotransportadora'], 
-            d['enderecofatura'], 
-            d['imposto'], 
-            d['dtrecebimento'], 
+            d['enderecoentrega'],
+            d['dtpedido'],
+            d['contacliente'],
+            d['codigotransportadora'],
+            d['enderecofatura'],
+            d['imposto'],
+            d['dtrecebimento'],
             d['numerocartaocredito']
         )
 

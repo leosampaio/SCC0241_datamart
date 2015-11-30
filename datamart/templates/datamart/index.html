@@ -1,6 +1,29 @@
 {% extends "datamart/base.html" %}
 
+{% load staticfiles %}
+
 {% block base_content %}
-Aqui seria a tela de login.
-<a href="{% url 'conta' %}">Ir para a área de usuário</a>
+<div class="row container">
+    <div class="col s12 m12 l6 offset-l3">
+        <h4>Faça Login</h4>
+        <form method="post">
+            {% csrf_token %}
+            {% include 'renders/render_forms.html' %}
+            <div class="row">
+                <button class="right waves-effect waves-light btn-large black-text" type="submit" name="action">Login</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/css/select2.min.css" rel="stylesheet" />
+<link href="{% static 'css/custom-select2.css' %}" rel="stylesheet" />
+<script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1-rc.1/js/select2.min.js"></script>
+<script type="text/javascript">
+$('select').select2({
+    width: "",
+});
+</script>
 {% endblock %}

@@ -14,6 +14,7 @@
                     <th>Total</th>
                 </tr>
             </thead>
+        {% if vendas %}
             <tbody>
                 {% for venda in vendas %}
                     <tr>
@@ -26,6 +27,10 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        </table>
+            <p>Não há nenhuma venda vinculada a este vendedor.</p>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
