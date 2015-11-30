@@ -348,3 +348,9 @@ class relatorio2(PDFTemplateView):
 def sp_clientes_gt_15_pedidos(request):
     return render(request, 'datamart/tela_relatorios.html')
 
+def relatorio2_html(request):
+    context = {
+        'vendedores': get_relatorio2(),
+    }
+    return render(request, 'pdf/relatorio2.html')
+
