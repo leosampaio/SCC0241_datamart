@@ -11,10 +11,16 @@ def joinnn(char, lista):
 class Base:
     def get_code(self):
         cursor = connection.cursor()
-        query = "SELECT MAX(codigo) FROM {}".format(self.__class__.__name__)
+        query = "SELECT MAX(codigo) FROM {}".format()
         cursor.execute(query)
         current = cursor.fetchall()[0][0]
         return current + 1
+
+    @staticmethod
+    def delete(self, codigo):
+        cursor = connection.cursor()
+        query = "DELETE FROM {}\
+            WHERE codigo=\'{}\'".format(self.__class__.__name__, codigo)
 
 class Cliente(Base):
 
@@ -343,6 +349,12 @@ class Pedido(Base):
             )
         print(query)
         cursor.execute(query)
+
+    @staticmethod
+    def delete(codigo):
+        cursor = connection.cursor()
+        query = "DELETE FROM Pedido\
+            WHERE codigo=\'{}\'".format(codigo)
 
     @staticmethod
     def all():

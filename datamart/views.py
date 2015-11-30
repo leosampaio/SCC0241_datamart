@@ -86,7 +86,7 @@ def detalhes_venda(request, pk):
             d['dtrecebimento'], 
             d['numerocartaocredito']
         )
-
+        pedido.codigo = pk
         pedido.update()
 
     context = {
@@ -94,6 +94,10 @@ def detalhes_venda(request, pk):
         'form': form,
     }
     return render(request, 'datamart/detalhes_venda.html', context)
+
+def delete_venda(request, codigo):
+    Pedido.delete(codigo)
+    return redirect("listar_vendas")
 
 
 def detalhes_produto(request, codigopedido):
