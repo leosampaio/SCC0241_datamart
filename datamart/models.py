@@ -206,6 +206,7 @@ class Produto(Base):
 
 
 class Vendedor(Base):
+
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
@@ -267,6 +268,53 @@ class Transportadora(Base):
 
 
 class Pedido(Base):
+
+    @autoassign
+    def __init__(
+        self, 
+        codigocliente, 
+        dtenvio, 
+        enderecoentrega, 
+        dtpedido, 
+        contacliente, 
+        codigotransportadora, 
+        enderecofatura, 
+        imposto, 
+        dtrecebimento, 
+        numerocartaocredito):
+        self.codigo = self.get_code()
+
+    def save(self):
+        cursor = connection.cursor()
+        query = "INSERT INTO Pedido (\
+                codigo, \
+                codigocliente, \
+                dtenvio, \
+                enderecoentrega, \
+                dtpedido, \
+                contacliente, \
+                codigotransportadora, \
+                enderecofatura, \
+                imposto, \
+                dtrecebimento, \
+                numerocartaocredito\
+            )\
+            VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\')".format(
+                self.codigo,
+                self.codigocliente, 
+                self.dtenvio.strftime('%Y-%m-%d'), 
+                self.enderecoentrega, 
+                self.dtpedido.strftime('%Y-%m-%d'), 
+                self.contacliente, 
+                self.codigotransportadora, 
+                self.enderecofatura, 
+                self.imposto, 
+                self.dtrecebimento.strftime('%Y-%m-%d'), 
+                self.numerocartaocredito
+            )
+        print(query)
+        cursor.execute(query)
+
     @staticmethod
     def all():
         cursor = connection.cursor()

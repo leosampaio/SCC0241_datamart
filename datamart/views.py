@@ -82,12 +82,12 @@ def detalhes_venda(request, pk):
     return render(request, 'datamart/detalhes_venda.html', context)
 
 
-def detalhes_produto(request, pk):
+def detalhes_produto(request, codigopedido):
     form = EditarProdutoForm()
     if request.method == 'POST':
         form = EditarProdutoForm(request.POST)
 
-    produtos_venda = DetalhesPedido.get_by_id_as_dict(pk)
+    produtos_venda = DetalhesPedido.get_by_id_as_dict(codigopedido)
     produtos_choice = Produto.get_all_as_choice()[:settings.LIMIT_QUERY]
     produtos_precos = Produto.get_all_as_pricelist()[:settings.LIMIT_QUERY]
 
@@ -98,7 +98,7 @@ def detalhes_produto(request, pk):
         print(form.cleaned_data)
 
     context = {
-        'venda_id': pk,
+        'venda_id': codigopedido,
         'produtos_venda': produtos_venda,
         'produtos_precos': produtos_precos,
         'form': form,
@@ -157,6 +157,22 @@ def nova_venda(request):
 
     if request.method == 'POST' and form.is_valid():
         print(form.cleaned_data)
+        d = form.cleaned_data
+        pedido = Pedido(
+            d['codigocliente'],
+            d['dtenvio'],
+            d['enderecoentrega'], 
+            d['dtpedido'], 
+            d['contacliente'], 
+            d['codigotransportadora'], 
+            d['enderecofatura'], 
+            d['imposto'], 
+            d['dtrecebimento'], 
+            d['numerocartaocredito']
+        )
+
+        pedido.save()
+        return redirect('detalhes_produto', codigopedido=pedido.codigo)
 
     context = {
         'form': form,
