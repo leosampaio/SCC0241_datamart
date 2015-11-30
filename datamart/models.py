@@ -1,5 +1,6 @@
 from django.db import connection
 from django.db import DatabaseError
+from .decorators import autoassign
 
 
 # Join if not None
@@ -7,8 +8,31 @@ def joinnn(char, lista):
     items = [x for x in lista if x is not None]
     return char.join(items)
 
+class Base:
+    def get_code(self):
+        cursor = connection.cursor()
+        query = "SELECT MAX(codigo) FROM {}".format(self.__class__.__name__)
+        cursor.execute(query)
+        current = cursor.fetchall()[0][0]
+        return current + 1
 
-class Cliente:
+class Cliente(Base):
+
+    @autoassign
+    def __init__(self, sufixo, nomedomeio, primeironome, sobrenome, senha, tratamento):
+        self.codigo = self.get_code()
+
+    def save(self):
+        cursor = connection.cursor()
+        query = "INSERT INTO Cliente (\
+                codigo, sufixo, nomedomeio, primeironome, sobrenome, senha, tratamento\
+            )\
+            VALUES (\'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\', \'{}\')".format(
+                self.codigo, self.sufixo, self.nomedomeio, self.primeironome, self.sobrenome, self.senha, self.tratamento
+            )
+        print(query)
+        cursor.execute(query)
+
     @staticmethod
     def all():
         cursor = connection.cursor()
@@ -111,7 +135,7 @@ class ClienteEndereco():
         return detalhes
 
 
-class Produto():
+class Produto(Base):
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
@@ -164,7 +188,7 @@ class Produto():
         return choices
 
 
-class Vendedor():
+class Vendedor(Base):
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
@@ -193,7 +217,7 @@ class Vendedor():
         return dictionary
 
 
-class Transportadora():
+class Transportadora(Base):
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()
@@ -225,7 +249,7 @@ class Transportadora():
         return choices
 
 
-class Pedido():
+class Pedido(Base):
     @staticmethod
     def all():
         cursor = connection.cursor()
@@ -285,7 +309,7 @@ class Pedido():
         ]
 
 
-class DetalhesPedido():
+class DetalhesPedido(Base):
     @staticmethod
     def get_by_id(id):
         cursor = connection.cursor()

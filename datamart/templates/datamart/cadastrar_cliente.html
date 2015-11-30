@@ -7,6 +7,7 @@
     <h4>Cadastrar Cliente</h4>
     <div class="col s12">
         <form method="post" action="">
+        {% csrf_token %} 
             {% include 'renders/render_forms.html' %}
             <div class="row">
                 <button class="right waves-effect waves-light btn-large black-text" type="submit" name="action">Salvar e Incluir Endereços</button>

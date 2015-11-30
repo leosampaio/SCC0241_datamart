@@ -1,6 +1,6 @@
 # coding:utf-8
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Cliente, Pedido, Transportadora, Endereco, Produto, DetalhesPedido, ClienteEndereco
 from django.conf import settings
@@ -71,6 +71,10 @@ def detalhes_venda(request, pk):
     form.fields['enderecoentrega'].choices = enderecos
     form.fields['enderecoentrega'].initial = venda['ENDERECOENTREGA']['ID']
 
+    if request.method == 'POST' and form.is_valid():
+        data = form.cleaned_data
+        print(form.cleaned_data)
+
     context = {
         'venda': venda,
         'form': form,
@@ -90,6 +94,8 @@ def detalhes_produto(request, pk):
     form.fields['codigoproduto'].choices = produtos_choice
 
     # form.fields['desconto'].initial = 0
+    if request.method == 'POST' and form.is_valid():
+        print(form.cleaned_data)
 
     context = {
         'venda_id': pk,
@@ -121,6 +127,9 @@ def alterar_produto(request, venda_pk, produto_codigo):
     form.fields['desconto'].initial = produto_atual['DESCONTO']
     form.fields['quantidade'].initial = produto_atual['QUANTIDADE']
 
+    if request.method == 'POST' and form.is_valid():
+        print(form.cleaned_data)
+
     context = {
         'venda_id': venda_pk,
         'produtos_precos': produtos_precos,
@@ -146,6 +155,9 @@ def nova_venda(request):
     form.fields['enderecofatura'].choices = enderecos
     form.fields['enderecoentrega'].choices = enderecos
 
+    if request.method == 'POST' and form.is_valid():
+        print(form.cleaned_data)
+
     context = {
         'form': form,
     }
@@ -155,9 +167,18 @@ def nova_venda(request):
 def cadastrar_cliente(request):
     form = CadastrarClienteForm()
     if request.method == 'POST':
-        form = EditarVendaForm(request.POST)
+        form = CadastrarClienteForm(request.POST)
         # Salva as coisas no BD
         # Redireciona para url:incluir_enderecos param:(ID deste user)
+
+    if request.method == 'POST' and form.is_valid():
+        d = form.cleaned_data
+        cliente = Cliente(
+            d['sufixo'], d['nomedomeio'], d['primeironome'], d['sobrenome'], d['senha'], d['tratamento']
+        )
+
+        cliente.save()
+        return redirect('cadastrar_enderecos', cliente_codigo=cliente.codigo)
 
     context = {
         'form': form,
@@ -166,15 +187,18 @@ def cadastrar_cliente(request):
     return render(request, 'datamart/cadastrar_cliente.html', context)
 
 
-def cadastrar_enderecos(request, cliete_codigo):
+def cadastrar_enderecos(request, cliente_codigo):
     form = CadastrarEnderecoForm()
-    enderecos = ClienteEndereco.get_by_id_as_dict(cliete_codigo)
+    enderecos = ClienteEndereco.get_by_id_as_dict(cliente_codigo)
     if request.method == 'POST':
         form = CadastrarEnderecoForm(request.POST)
         # Inclui endereco no BD
 
     enderecos_choice = Endereco.get_all_as_choice()[:settings.LIMIT_QUERY]
     form.fields['endereco'].choices = enderecos_choice
+
+    if request.method == 'POST' and form.is_valid():
+        print(form.cleaned_data)
 
     context = {
         'enderecos': enderecos,

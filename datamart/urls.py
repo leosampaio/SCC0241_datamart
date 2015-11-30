@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^nova-venda/$', views.nova_venda, name='nova_venda'),
 
     url(r'^cadastrar-cliente/$', views.cadastrar_cliente, name='cadastrar_cliente'),
-    url(r'^cadastrar-cliente/(\d+)/enderecos/$', views.cadastrar_enderecos, name='cadastrar_enderecos'),
+    url(r'^cadastrar-cliente/(?P<cliente_codigo>\d+)/enderecos/$', views.cadastrar_enderecos, name='cadastrar_enderecos'),
 
     url(r'^listar-vendas/$', views.listar_vendas, name='listar_vendas'),
     url(r'^listar-vendas/detalhes/(\d+)/$', views.detalhes_venda, name='detalhes_venda'),

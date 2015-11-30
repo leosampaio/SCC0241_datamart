@@ -43,6 +43,7 @@
         </div>
 
         <form method="post" action="">
+            {% csrf_token %} 
             {% include 'renders/render_forms.html' %}
             <div class="row">
                 <p>Preço: <span id="totalprice">0,00</span></p>

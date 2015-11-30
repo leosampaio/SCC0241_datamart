@@ -46,7 +46,6 @@ class EditarVendaForm(forms.Form):
         label='Endereço de Entrega',
     )
 
-
 class EditarProdutoForm(forms.Form):
     codigoproduto = forms.ChoiceField(
         label='Produto',
