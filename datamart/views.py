@@ -270,6 +270,31 @@ def cadastrar_enderecos(request, cliente_codigo):
 def relatorios(request):
     return render(request, 'datamart/tela_relatorios.html')
 
+def get_relatorio2():
+    cursor = connection.cursor()
+    cursor.execute("SELECT SUM(Det.precounitario*Det.quantidade-Det.desconto) as totalVenda, V.codigo, \
+          (V.primeiroNome || ' ' || V.nomedoMeio || ' ' || V.sobrenome) as nomeCompleto, V.quota\
+                FROM DetalhesPedido Det\
+                JOIN Pedido P ON Det.codigoPedido = P.codigo AND P.dtPedido BETWEEN TO_DATE ('1900/02/01', 'yyyy/mm/dd')\
+                AND TO_DATE ('2014/02/28', 'yyyy/mm/dd')\
+                JOIN Vendedor V ON P.codigoVendedor = V.codigo\
+                HAVING SUM(Det.precounitario*Det.quantidade-Det.desconto) >= V.quota \
+                GROUP BY V.codigo, (V.primeiroNome || ' ' || V.nomedoMeio || ' ' || V.sobrenome), V.quota;")
+
+    querylist = cursor.fetchall()
+    querylist = list(querylist)
+    context = []
+
+    for query in querylist:
+        context.append({
+            'totalVenda': query[0],
+            'codigo': query[1],
+            'nomeCompleto': query[2],
+            'quota': query[3]
+        })
+
+    return context
+
 
 def get_sp_clientes_gt_15_pedidos():
     cursor = connection.cursor()
@@ -304,6 +329,19 @@ class SPClientes(PDFTemplateView):
         context = super(SPClientes, self).get_context_data(**kwargs)
         context['titulo_relatorio'] = 'Clientes com mais do que 15 pedidos'
         context['clientes'] = get_sp_clientes_gt_15_pedidos()
+        return context
+
+class relatorio2(PDFTemplateView):
+    filename = 'my_pdf.pdf'
+    template_name = 'pdf/relatorio2.html'
+    cmd_options = {
+        'margin-top': 3,
+    }
+
+    def get_context_data(self, **kwargs):
+        context = super(relatorio2, self).get_context_data(**kwargs)
+        context['titulo_relatorio'] = 'Vendedores que Atingiram a Quota No Período'
+        context['vendedores'] = get_relatorio2()
         return context
 
 

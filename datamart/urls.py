@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^relatorios/$', views.relatorios, name='relatorios'),
     url(r'^relatorios/sp-clientes-gt-15-pedidos/$', views.sp_clientes_gt_15_pedidos, name='sp_clientes_gt_15_pedidos'),
     url(r'^relatorios/sp-clientes-gt-15-pedidos/pdf/$', views.SPClientes.as_view(), name='sp_clientes_gt_15_pedidos_pdf'),
+    url(r'^relatorios/relatorio2/pdf/$', views.relatorio2.as_view(), name='relatorio2_pdf'),
 ]

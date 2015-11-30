@@ -1,0 +1,26 @@
+{% extends "pdf/base.html" %}
+
+{% block base_content %}
+<table>
+    <thead>
+        <tr>
+            <th>Código</th>
+            <th>Nome</th>
+            <th>Quota</th>
+            <th></th>
+            <th>Total Venda</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for vendedor in vendedores %}
+        <tr>
+            <td>{{vendedor.codigo}}</td>
+            <td>{{vendedor.nomeCompleto}}</td>
+            <td>{{vendedor.quota}}</td>
+            <td></td>
+            <td>{{vendedor.totalVenda}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
