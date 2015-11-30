@@ -97,8 +97,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'orcl14',
-        'USER': 'a8532360',
-        'PASSWORD': 'a8532360',
+        'USER': 'gs7',
+        'PASSWORD': 'gs7',
         'HOST': 'grad.icmc.usp.br',
         'PORT': '15214',
     }
