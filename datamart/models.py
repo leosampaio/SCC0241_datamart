@@ -43,6 +43,7 @@ class Base:
         cursor = connection.cursor()
         query = "DELETE FROM {}\
             WHERE codigo=\'{}\'".format(self.__class__.__name__, codigo)
+        cursor.execute(query)
 
 
 class Cliente(Base):
@@ -392,6 +393,7 @@ class Pedido(Base):
         cursor = connection.cursor()
         query = "DELETE FROM Pedido\
             WHERE codigo=\'{}\'".format(codigo)
+        cursor.execute(query)
 
     @staticmethod
     def all():
